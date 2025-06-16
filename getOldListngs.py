@@ -4,7 +4,7 @@ import json
 
 def get_last_10_commits(file_path):
     """Get the last 10 commit hashes for a specific file."""
-    result = subprocess.run(["git", "log", "--format=%H", "-n", "150", "--", file_path],
+    result = subprocess.run(["git", "log", "--format=%H", "-n", "10", "--", file_path],
                             capture_output=True, text=True, check=True)
     return result.stdout.strip().split("\n")
 
@@ -37,11 +37,11 @@ def write_additions_to_jsonl(file_path, additions):
             file.write("\n") 
 
 # Example usage
-file_path = "README.md"  # Change this to your file path
-additions = collect_additions(file_path)
+#file_path = "README.md"  # Change this to your file path
+#additions = collect_additions(file_path)
 
 
-jsonl_file_path = "additions.jsonl"  # Output file name
-write_additions_to_jsonl(jsonl_file_path, additions)
+#jsonl_file_path = "additions.jsonl"  # Output file name
+#write_additions_to_jsonl(jsonl_file_path, additions)
 
-print("\n".join(additions))  # Print all collected additions
+#print("\n".join(additions))  # Print all collected additions

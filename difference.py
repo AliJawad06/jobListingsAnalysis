@@ -1,5 +1,7 @@
 import json
 
+
+
 def get_urls_from_jsonl(file_path):
     """Extract URLs from a JSONL file and return them as a set."""
     urls = set()
@@ -19,17 +21,19 @@ def find_missing_urls(file1, file2, output_file):
     urls_file2 = get_urls_from_jsonl(file2)
 
     missing_urls = urls_file1 - urls_file2  # URLs in file1 but not in file2
-
+    nMissingUrls = len(missing_urls)
+    
     with open(output_file, "w", encoding="utf-8") as outfile:
         for url in missing_urls:
             json.dump({"url": url}, outfile)
             outfile.write("\n")
 
     print(f"Missing URLs saved to {output_file}")
+    return(nMissingUrls)
 
 # Example usage
-file1 = "urls.jsonl"   # Replace with actual file path
-file2 = "output.jsonl"  # Replace with actual file path
-output_file = "missing_urls.jsonl"    # Output file for differences
+#file1 = "urls.jsonl"   # Replace with actual file path
+#file2 = "output.jsonl"  # Replace with actual file path
+#output_file = "missing_urls.jsonl"    # Output file for differences
 
-find_missing_urls(file1, file2, output_file)
+#nDifference = find_missing_urls(file1, file2, output_file)
