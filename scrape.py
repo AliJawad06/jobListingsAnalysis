@@ -16,11 +16,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Set up Chrome options for headless browsing
 #chrome_options = Options()
-#chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration for headless mode
-
+#chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
 # Initialize WebDriver (Make sure to have ChromeDriver installed)
 chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless=new")
 driver = webdriver.Chrome(options=chrome_options)
 
 def scrape_url(url):
