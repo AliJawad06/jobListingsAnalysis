@@ -16,8 +16,8 @@ def main():
 
     print("\n".join(additions))  
 
-    #input_file = "additions.jsonl"   # Replace with your input JSONL filename
-    #output_file = "urls.jsonl"  # Replace with your desired output JSONL filename
+    input_file = "additions.jsonl"   # Replace with your input JSONL filename
+    output_file = "urls.jsonl"  # Replace with your desired output JSONL filename
 
     strip(input_file="additions.jsonl", output_file="urls.jsonl")
 
