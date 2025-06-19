@@ -4,7 +4,7 @@ import json
 
 def get_last_10_commits(file_path):
     """Get the last 10 commit hashes for a specific file."""
-    result = subprocess.run(["git", "log", "--format=%H", "-n", "1", "--", file_path],
+    result = subprocess.run(["git", "log", "--format=%H", "-n", "10", "--", file_path],
                             capture_output=True, text=True, check=True)
     return result.stdout.strip().split("\n")
 
