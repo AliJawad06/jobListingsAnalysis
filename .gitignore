@@ -1,3 +1,4 @@
 myenv
 static
 __pycache__
+.venv
