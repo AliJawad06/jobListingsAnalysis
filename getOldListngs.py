@@ -4,6 +4,7 @@ import os
 
 
 
+
 def pull_latest(repo): 
     try:
         path = "/Users/alijawad/jobRightScraper/" 

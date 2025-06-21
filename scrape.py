@@ -86,20 +86,25 @@ def process_urls(input_file,output_file):
     # Scrape URLs one by one
     results = []
     #for url in urls:
-
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_url = {executor.submit(scrape_url, url): url for url in urls}
-
-        with open(output_file, "a", encoding="utf-8") as outfile:
-            for future in as_completed(future_to_url):
-                url = future_to_url[future] 
+    with open(output_file, "a", encoding="utf-8") as outfile:
+        with ThreadPoolExecutor(max_workers=10) as executor: 
+            future_to_url = {executor.submit(scrape_url, url): url for url in urls}
+            for future in as_completed(future_to_url, timeout=60):  # global timeout
+                url = future_to_url[future]
                 try:
-                    company, date, url, title, skills = future.result()
-                    json.dump({"company": company, "date":date, "url": url, "title": title, "skills": skills}, outfile)
+                    result = future.result(timeout=30)  # per-task timeout
+                    company, date, url, title, skills = result
+                    print(f"Success: {url}")
+                    json.dump({
+                        "company": company,
+                        "date": date,
+                        "url": url,
+                        "title": title,
+                        "skills": skills
+                    }, outfile)
                     outfile.write("\n")
-                    results.append((company, date, url, title, skills))
                 except Exception as e:
-                    print(f"Error scraping {future_to_url[future]}: {e}")
+                    print(f"Error scraping {url}: {e}")
    
     print(f"Scraping completed. Results saved to {output_file}.")
 
