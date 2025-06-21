@@ -11,18 +11,16 @@ def main():
     repos = ["2025-Management-New-Grad"]
 
     for folder in repos:
-       #file_path = "README.md"
-        #additions_output = "additions.jsonl"
-        #commit_tracker = "last_commit.jsonl"
+        file_path = "README.md"
+        additions_output = "additions.jsonl"
+        commit_tracker = "last_commit.jsonl"
 
-        #process_new_commits(file_path, additions_output, commit_tracker,folder)
+        process_new_commits(file_path, additions_output, commit_tracker,folder)
 
-        path = "/Users/alijawad/jobRightScraper/" 
-        os.chdir(path + folder)
         input_file = "additions.jsonl"   # Replace with your input JSONL filename
         output_file = "urls.jsonl"  # Replace with your desired output JSONL filename
 
-        #strip(input_file="additions.jsonl", output_file="urls.jsonl")
+        strip(input_file="additions.jsonl", output_file="urls.jsonl")
 
       
             
