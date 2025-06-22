@@ -54,13 +54,19 @@ def scrape_url(url):
         title = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobTitle"]
         date = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["publishTime"]
         date = date.split(" ")[0]
+        salary = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["salaryDesc"]
+        salary = salry.split(" ")[0]
+        recruiter = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobRecruiter"]
+        if (recruiter == ""):
+                recruiter = "N/A"   
         #print(jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["detailQualifications"]["mustHave"])
         #print(jsonSkills)
+        location = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobLocation"] 
        
         skills = []
         for skill in jsonSkills:
             skills.append(skill["skill"])
-        return company, date, url, title, skills
+        return company, date,salary,url, title, skills, recruiter
     except Exception as e:
         print(f"Error fetching {url}: {e}")
         return url, "N/A", []
@@ -93,14 +99,16 @@ def process_urls(input_file,output_file):
                 url = future_to_url[future]
                 try:
                     result = future.result(timeout=30)  # per-task timeout
-                    company, date, url, title, skills = result
+                    company, date, salary, url, title, skills, recruiter = result
                     print(f"Success: {url}")
                     json.dump({
                         "company": company,
                         "date": date,
+                        "salary": salary,
                         "url": url,
                         "title": title,
-                        "skills": skills
+                        "skills": skills,
+                        "recruiter": recruiter
                     }, outfile)
                     outfile.write("\n")
                 except Exception as e:
