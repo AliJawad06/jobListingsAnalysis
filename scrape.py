@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
+import os
 
 
 # Input and output JSONL files
@@ -34,39 +35,44 @@ def scrape_url(url):
     try:
     #    driver.get(url)
         time.sleep(5)  # Wait for the page to load (adjust as necessary)
-        res = requests.get(url)
-        #print(res.text)
+        res = requests.get("https://jobright.ai/jobs/info/685213ffb601b8126382fd6b?utm_campaign=Consultant&utm_source=1103")
         soup = BeautifulSoup(res.content, "html.parser")
-        # Extract job title
-        # Extract skills 
+
         jsonText = soup.find(id="__NEXT_DATA__").text 
-        
-        
-        jsonData= json.loads(jsonText)
-        #print(jsonData)
-        jsonSkills = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["detailQualifications"]["mustHave"]['hardSkill']
-        if(len(jsonSkills) == 0):
-            jsonSkills = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["detailQualifications"]["preferredHave"]['hardSkill']
-        #print(jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["detailQualifications"]["mustHave"])
-        company = jsonData["props"]["pageProps"]["dataSource"]["companyResult"]["companyName"]
-        #print(company)
-        #print("this is company")
-        title = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobTitle"]
-        date = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["publishTime"]
-        date = date.split(" ")[0]
-        salary = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["salaryDesc"]
-        salary = salry.split(" ")[0]
-        recruiter = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobRecruiter"]
-        if (recruiter == ""):
-                recruiter = "N/A"   
-        #print(jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["detailQualifications"]["mustHave"])
-        #print(jsonSkills)
-        location = jsonData["props"]["pageProps"]["dataSource"]["jobResult"]["jobLocation"] 
-       
+        jsonData = json.loads(jsonText)
+
+        data_source = jsonData.get("props", {}).get("pageProps", {}).get("dataSource", {})
+        job_result = data_source.get("jobResult", {})
+        company_result = data_source.get("companyResult", {})
+
+        # Skills
+        jsonSkills = job_result.get("detailQualifications", {}).get("mustHave", {}).get("hardSkill", [])
+        if not jsonSkills:
+            jsonSkills = job_result.get("detailQualifications", {}).get("preferredHave", {}).get("hardSkill", [])
+
+        # Company
+        company = company_result.get("companyName", "N/A")
+
+        # Title
+        title = job_result.get("jobTitle", "N/A")
+
+        # Date
+        date = job_result.get("publishTime", "").split(" ")[0] if job_result.get("publishTime") else "N/A"
+
+        # Salary
+        salary_desc = job_result.get("salaryDesc", "")
+        salary = salary_desc.split(" ")[0] if salary_desc else "N/A"
+
+        # Recruiter
+        recruiter = job_result.get("jobRecruiter", "") or "N/A"
+
+        # Location
+        location = job_result.get("jobLocation", "N/A")
+
         skills = []
         for skill in jsonSkills:
             skills.append(skill["skill"])
-        return company, date,salary,url, title, skills, recruiter
+        return company, date,salary,url, title, skills, recruiter,location
     except Exception as e:
         print(f"Error fetching {url}: {e}")
         return url, "N/A", []
@@ -99,8 +105,9 @@ def process_urls(input_file,output_file):
                 url = future_to_url[future]
                 try:
                     result = future.result(timeout=30)  # per-task timeout
-                    company, date, salary, url, title, skills, recruiter = result
+                    company, date,salary,url, title, skills, recruiter, location = result
                     print(f"Success: {url}")
+                    field = os.getcwd().replace("/Users/alijawad/jobRightScraper", "").replace("2025-", "").replace("-New-Grad","")
                     json.dump({
                         "company": company,
                         "date": date,
@@ -108,7 +115,9 @@ def process_urls(input_file,output_file):
                         "url": url,
                         "title": title,
                         "skills": skills,
-                        "recruiter": recruiter
+                        "recruiter": recruiter,
+                        "location": location,
+                        "field": field
                     }, outfile)
                     outfile.write("\n")
                 except Exception as e:

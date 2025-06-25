@@ -41,7 +41,7 @@ def update_jsonl_with_salary_location(file_path):
                 print("Skipping invalid JSON line")
 
     # Step 2: Scrape and update each object in parallel
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=30) as executor:
         future_to_obj = {
             executor.submit(scrape_salary_and_location, obj["url"]): obj
             for obj in updated_objects
